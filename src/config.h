@@ -13,6 +13,9 @@ const int SCREEN_HEIGHT = 32; // OLED display height, in pixels
 #define LINEA_BLANCO  F("                    ")
 
 // PINOUT
-const int DHT_PIN = GPIO_NUM_3;
-const int PULSA1_PIN = GPIO_NUM_5;
-const int PULSA2_PIN = GPIO_NUM_17;
+// PINOUT
+const int DHT_PIN = GPIO_NUM_33;
+const int PIN_ADC = GPIO_NUM_32;
+const int PIN_ENC_A = GPIO_NUM_18;
+const int PIN_ENC_B = GPIO_NUM_5;
+const int PIN_ENC_PUSH = GPIO_NUM_19;

@@ -10,11 +10,14 @@
 #include <DHT.h>
 // Pulsador
 #include <checkButton.h>
+// Encoder
+#include <Encoder.h>
 
 
 blink parpadeo(LED_BUILTIN);
 Adafruit_SSD1306 display = Adafruit_SSD1306(SCREEN_WIDTH,SCREEN_HEIGHT, &Wire);
 DHT dht(DHT_PIN, DHT11);
+Encoder myEnc(PIN_ENC_A, PIN_ENC_B);
 
 void dhtInit(){
   dht.begin();
@@ -38,8 +41,11 @@ void displayInit(){
   display.display();
 }
 
+void myEncInit(){
+  myEnc.write(0);
+}
 
-void UpdateAndShow(unsigned long interval,int cuenta)
+void UpdateAndShow(unsigned long interval, int cuenta)
 {
 	static unsigned long previousMillis = 0;        // will store last time LED was updated
 	//const long interval = 1000;           // interval at which to blink (milliseconds)
@@ -54,7 +60,7 @@ void UpdateAndShow(unsigned long interval,int cuenta)
     display.printf("Temperatura: %.1fC\nHumedad: %.1f\nValor ADC: %d\nCuenta: %d\n",
                     dht.readTemperature(),
                     dht.readHumidity(),
-                    analogRead(GPIO_NUM_15),
+                    map(analogRead(PIN_ADC),0 ,4095, 4095, 0),
                     cuenta);
     display.display();
 
@@ -72,14 +78,16 @@ void setup() {
   parpadeo.init();
   parpadeo.on();
   Serial.println(F("Iniciando Entradas Digitales"));
-  pinMode(PULSA1_PIN,INPUT_PULLUP);
-  pinMode(PULSA2_PIN, INPUT_PULLUP);
+  pinMode(PIN_ENC_PUSH,INPUT_PULLUP);
+  
   Serial.println(F("Iniciando Display"));
   displayInit();
   Serial.println(F("Iniciando DHT11"));
   dhtInit();
   Serial.println(F("Configurando ADC..."));
   analogReadResolution(12);
+  Serial.println(F("Inicializando Encoder"));
+  myEncInit();
   Serial.println(F("Setup Terminado"));
   Serial.println(F("PINOUT: https://www.mischianti.org/2021/02/17/doit-esp32-dev-kit-v1-high-resolution-pinout-and-specs/"));
   delay(5000);
@@ -87,11 +95,11 @@ void setup() {
 }
 
 void loop() {
-  int cuenta = 0;
-  static int detectado = 0;
+  int cuenta = myEnc.read() /4;
   parpadeo.update(BLINK_OK);
-  cuenta = checkButton(PULSA2_PIN);
-  if (cuenta !=0) detectado = cuenta;
-  UpdateAndShow(1000, detectado);
+  int pulsador = checkButton(PIN_ENC_PUSH);
+  if (pulsador !=0) Serial.printf("Valor del pulsador: %d\n", pulsador);
+  
+  UpdateAndShow(1000, cuenta);
    
 }
