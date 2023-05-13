@@ -197,7 +197,7 @@ void myEncInit(){
   myEnc.write(0);
 }
 
-void UpdateAndShow(unsigned long interval, int cuenta, float valorADC)
+void displayUpdateAndShow(unsigned long interval, int cuenta, float valorADC)
 {
 	static unsigned long previousMillis = 0;        // will store last time LED was updated
 	//const long interval = 1000;           // interval at which to blink (milliseconds)
@@ -267,6 +267,6 @@ void loop() {
   parpadeo.update(BLINK_OK);
   int pulsador = checkButton(PIN_ENC_PUSH);
   if (pulsador !=0) Serial.printf("Valor del pulsador: %d\n", pulsador);
-  UpdateAndShow(100, cuenta, valorADC);
+  displayUpdateAndShow(100, cuenta, valorADC);
    
 }
