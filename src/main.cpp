@@ -24,7 +24,7 @@ const char* password = "HelpUsObiJuan";
 String ledState;  // Stores LED state
 
 AsyncWebServer server(80);
-blink parpadeo(PIN_LED_R);
+blink parpadeo(LED_BUILTIN);
 Adafruit_SSD1306 display = Adafruit_SSD1306(SCREEN_WIDTH,SCREEN_HEIGHT, &Wire);
 DHT dht(DHT_PIN, DHT11);
 Encoder myEnc(PIN_ENC_A, PIN_ENC_B);
@@ -166,6 +166,7 @@ void dhtInit(){
 
 void displayInit(){
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  //display.begin()
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
@@ -226,10 +227,11 @@ void setup() {
   Serial.println(F("Hardware Test"));
   Serial.println(F("Iniciando Led"));
   parpadeo.init();
-  parpadeo.on();
+  parpadeo.off();
   Serial.println(F("Iniciando Entradas Digitales"));
   pinMode(PIN_ENC_PUSH,INPUT_PULLUP);
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(PIN_LED_R, OUTPUT);
+  digitalWrite(PIN_LED_R, HIGH);
   Serial.println(F("Iniciando Display"));
   displayInit();
   Serial.println(F("Iniciando DHT11"));
@@ -258,7 +260,7 @@ void setup() {
   Serial.println(F("Setup Terminado"));
   Serial.println(F("PINOUT: https://www.mischianti.org/2021/02/17/doit-esp32-dev-kit-v1-high-resolution-pinout-and-specs/"));
   delay(5000);
-  
+  digitalWrite(PIN_LED_R, LOW);
 }
 
 void loop() {
@@ -267,6 +269,7 @@ void loop() {
   parpadeo.update(BLINK_OK);
   int pulsador = checkButton(PIN_ENC_PUSH);
   if (pulsador !=0) Serial.printf("Valor del pulsador: %d\n", pulsador);
+  if( pulsador !=0) digitalWrite(PIN_LED_R, !digitalRead(PIN_LED_R));
   displayUpdateAndShow(100, cuenta, valorADC);
    
 }
