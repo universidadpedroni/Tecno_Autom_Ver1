@@ -16,6 +16,8 @@
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
 #include "SPIFFS.h"
+// Logo UTN
+#include "logo.h"
 
 const char* ssid = "MyWiFi_S9";
 const char* password = "HelpUsObiJuan";
@@ -178,6 +180,14 @@ void displayInit(){
   display.display();
 }
 
+void displayLogo(){
+  display.clearDisplay();
+  display.drawBitmap(0, 0, logo_UTN, 126, 126, 1);
+  display.display();
+  delay(2000);
+
+}
+
 void displayWiFi(){
   display.clearDisplay();
   display.setCursor(0,0);
@@ -234,6 +244,7 @@ void setup() {
   digitalWrite(PIN_LED_R, HIGH);
   Serial.println(F("Iniciando Display"));
   displayInit();
+  displayLogo();
   Serial.println(F("Iniciando DHT11"));
   dhtInit();
   Serial.println(F("Configurando ADC..."));
