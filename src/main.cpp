@@ -11,7 +11,7 @@
 // Pulsador
 #include <checkButton.h>
 // Encoder
-#include <Encoder.h>
+#include "ESP32Encoder.h"
 // Wifi
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
@@ -29,7 +29,7 @@ AsyncWebServer server(80);
 blink parpadeo(LED_BUILTIN);
 Adafruit_SSD1306 display = Adafruit_SSD1306(SCREEN_WIDTH,SCREEN_HEIGHT, &Wire);
 DHT dht(DHT_PIN, DHT11);
-Encoder myEnc(PIN_ENC_A, PIN_ENC_B);
+ESP32Encoder myEnc;
 
 
 /* Los archivos de la página web se encuentran en la carpeta /data. Hay que subirlos manualmente */
@@ -205,7 +205,8 @@ void displayWiFi(){
 }
 
 void myEncInit(){
-  myEnc.write(0);
+  myEnc.attachSingleEdge(PIN_ENC_A, PIN_ENC_B);
+  myEnc.setCount(0);
 }
 
 void displayUpdateAndShow(unsigned long interval, int cuenta, float valorADC)
@@ -275,7 +276,7 @@ void setup() {
 }
 
 void loop() {
-  int cuenta = myEnc.read() /4;
+  int cuenta =myEnc.getCount();
   float valorADC = (float) map(analogRead(PIN_ADC),0 ,4095, 4095, 0) * 3.3 / 4095.0;
   parpadeo.update(BLINK_OK);
   int pulsador = checkButton(PIN_ENC_PUSH);
