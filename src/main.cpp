@@ -4,8 +4,14 @@
 // oLED Display
 #include <SPI.h>
 #include <Wire.h>
+// Display
+#include "diplaySelection.h"
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#if USE_BIG_DISPLAY
+  #include <Adafruit_SH110X.h>
+#else
+  #include <Adafruit_SSD1306.h>
+#endif
 // Sensor DHT11
 #include <DHT.h>
 // Pulsador
@@ -27,9 +33,15 @@ String ledState;  // Stores LED state
 
 AsyncWebServer server(80);
 blink parpadeo(LED_BUILTIN);
-Adafruit_SSD1306 display = Adafruit_SSD1306(SCREEN_WIDTH,SCREEN_HEIGHT, &Wire);
+
 DHT dht(DHT_PIN, DHT11);
 ESP32Encoder myEnc;
+
+#if USE_BIG_DISPLAY
+  Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);//, OLED_RESET);
+#else
+  Adafruit_SSD1306 display = Adafruit_SSD1306(SCREEN_WIDTH,SCREEN_HEIGHT, &Wire);
+#endif
 
 
 /* Los archivos de la página web se encuentran en la carpeta /data. Hay que subirlos manualmente */
@@ -167,11 +179,19 @@ void dhtInit(){
 }
 
 void displayInit(){
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+#if USE_BIG_DISPLAY
+  display.begin(I2C_ADDRESS, true); // Address 0x3C default
+#else
+  display.begin(SSD1306_SWITCHCAPVCC, I2C_ADDRESS);
+#endif
   //display.begin()
   display.clearDisplay();
   display.setTextSize(1);
+#if USE_BIG_DISPLAY
+  display.setTextColor(SH110X_WHITE);
+#else
   display.setTextColor(SSD1306_WHITE);
+#endif  
   display.setCursor(0,0);
   display.println(F("Hola Mundo!"));
   display.println(F("Datos de Compilacion:"));
@@ -182,7 +202,8 @@ void displayInit(){
 
 void displayLogo(){
   display.clearDisplay();
-  display.drawBitmap(0, 0, logo_UTN, 126, 126, 1);
+  USE_BIG_DISPLAY == true? display.drawBitmap(0, 0, logo_UTN_128x64, 126, 126, 1): display.drawBitmap(0, 0, logo_UTN_128x32, 126, 126, 1); 
+  
   display.display();
   delay(2000);
 
