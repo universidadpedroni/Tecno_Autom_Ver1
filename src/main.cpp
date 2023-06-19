@@ -13,6 +13,7 @@
   #include <Adafruit_SSD1306.h>
 #endif
 // Sensor DHT11
+#include "dhtSelection.h"
 #include <DHT.h>
 // Pulsador
 #include <checkButton.h>
@@ -34,7 +35,8 @@ String ledState;  // Stores LED state
 AsyncWebServer server(80);
 blink parpadeo(LED_BUILTIN);
 
-DHT dht(DHT_PIN, DHT11);
+DHT dht(DHT_PIN, DHT_SENSOR);
+//DHT dht(DHT_PIN, DHT11);
 ESP32Encoder myEnc;
 
 #if USE_BIG_DISPLAY
@@ -267,7 +269,7 @@ void setup() {
   Serial.println(F("Iniciando Display"));
   displayInit();
   displayLogo();
-  Serial.println(F("Iniciando DHT11"));
+  DHT_SENSOR == DHT22? Serial.println(F("Iniciando DHT22")): Serial.println(F("Iniciando DHT11"));
   dhtInit();
   Serial.println(F("Configurando ADC..."));
   analogReadResolution(12);
