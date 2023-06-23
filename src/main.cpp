@@ -51,7 +51,7 @@ ESP32Encoder myEnc;
 String procesamientoFrontEnd(const String& var){
   
   if(var == "STATE"){
-    digitalRead(LED_BUILTIN) == HIGH? ledState = "ON" : ledState = "OFF";
+    digitalRead(PIN_LED_G) == HIGH? ledState = "ON" : ledState = "OFF";
     Serial.printf("Estado del LED: %s\n", ledState.c_str());  
     return ledState;
   }
@@ -126,13 +126,13 @@ void serverInitBootstrap(){
 
   // Ruta para encender el LED
   server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request){
-    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(PIN_LED_G, HIGH);
     request->send(SPIFFS, "/indexWithBoostrap.html", String(), false,procesamientoFrontEnd);
   });
 
   // Ruta para apagar el LED
   server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request){
-    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(PIN_LED_G, LOW);
     request->send(SPIFFS, "/indexWithBoostrap.html", String(), false,procesamientoFrontEnd);
   });
 
@@ -156,13 +156,13 @@ void serverInit(){
 
   // Ruta para encender el LED
   server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request){
-    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(PIN_LED_G, HIGH);
     request->send(SPIFFS, "/index.html", String(), false,procesamientoFrontEnd);
   });
 
   // Ruta para apagar el LED
   server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request){
-    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(PIN_LED_G, LOW);
     request->send(SPIFFS, "/index.html", String(), false,procesamientoFrontEnd);
   });
 
@@ -264,8 +264,8 @@ void setup() {
   parpadeo.off();
   Serial.println(F("Iniciando Entradas Digitales"));
   pinMode(PIN_ENC_PUSH,INPUT_PULLUP);
-  pinMode(PIN_LED_R, OUTPUT);
-  digitalWrite(PIN_LED_R, HIGH);
+  pinMode(PIN_LED_G, OUTPUT);
+  digitalWrite(PIN_LED_G, HIGH);
   Serial.println(F("Iniciando Display"));
   displayInit();
   displayLogo();
@@ -281,7 +281,7 @@ void setup() {
   wifiInit();
   displayWiFi();
   delay(2000);
-  if (digitalRead(PIN_ENC_PUSH)){
+  if (!digitalRead(PIN_ENC_PUSH)){
     Serial.println("Usando servidor con Boostrap Framework");
     serverInitBootstrap();
   }
@@ -295,7 +295,7 @@ void setup() {
   Serial.println(F("Setup Terminado"));
   Serial.println(F("PINOUT: https://www.mischianti.org/2021/02/17/doit-esp32-dev-kit-v1-high-resolution-pinout-and-specs/"));
   delay(5000);
-  digitalWrite(PIN_LED_R, LOW);
+  digitalWrite(PIN_LED_G, LOW);
 }
 
 void loop() {
@@ -304,7 +304,7 @@ void loop() {
   parpadeo.update(BLINK_OK);
   int pulsador = checkButton(PIN_ENC_PUSH);
   if (pulsador !=0) Serial.printf("Valor del pulsador: %d\n", pulsador);
-  if( pulsador !=0) digitalWrite(PIN_LED_R, !digitalRead(PIN_LED_R));
+  if( pulsador !=0) digitalWrite(PIN_LED_G, !digitalRead(PIN_LED_G));
   displayUpdateAndShow(100, cuenta, valorADC);
    
 }
